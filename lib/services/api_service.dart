@@ -1,17 +1,13 @@
-// api_service.dart
 import 'dart:convert';
 import 'package:prueba_helipagos_mobile/models/coin.dart';
 import 'package:http/http.dart' as http;
 import 'package:prueba_helipagos_mobile/models/nft.dart';
-import 'rate_limiter.dart';
 
 class ApiService {
   final String baseUrl = "https://api.coingecko.com/api/v3";
   final String apiKey = "CG-U9S4KQMw5EqVq52GthUdMjMU";
 
   final Map<String, Nft> _nftCache = {};
-  final RateLimiter _rateLimiter =
-      RateLimiter(maxRequests: 30, period: const Duration(minutes: 1));
 
   Future<List<Coin>> fetchCoins({int page = 1, int perPage = 10}) async {
     final response = await http.get(Uri.parse(
@@ -45,8 +41,11 @@ class ApiService {
       } else {
         throw Exception("Error al obtener detalles de monedas");
       }
+    } else if (searchResponse.statusCode == 429) {
+      throw Exception(
+          "Has excedido el límite de solicitudes. Por favor, intenta de nuevo más tarde.");
     } else {
-      throw Exception("Error al buscar monedas");
+      throw Exception("Error al realizar la búsqueda.");
     }
   }
 
@@ -66,8 +65,6 @@ class ApiService {
 
   Future<Nft> fetchNftDetails(
       String assetPlatformId, String contractAddress) async {
-    await _rateLimiter.acquire();
-
     final cacheKey = "$assetPlatformId-$contractAddress";
 
     if (_nftCache.containsKey(cacheKey)) {
@@ -80,7 +77,7 @@ class ApiService {
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
       final nft = Nft.fromJson(data);
-      _nftCache[cacheKey] = nft; // Almacena en caché
+      _nftCache[cacheKey] = nft;
       return nft;
     } else if (response.statusCode == 429) {
       throw Exception(

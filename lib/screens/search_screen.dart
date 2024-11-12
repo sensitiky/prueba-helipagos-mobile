@@ -134,7 +134,6 @@ class CoinCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Imagen de la moneda
               if (coin.imageUrl != null)
                 Image.network(
                   coin.imageUrl!,
@@ -146,7 +145,6 @@ class CoinCard extends StatelessWidget {
               else
                 const Icon(Icons.monetization_on, size: 50),
               const SizedBox(height: 8),
-              // Nombre de la moneda
               Text(
                 coin.name,
                 style: const TextStyle(
@@ -155,7 +153,6 @@ class CoinCard extends StatelessWidget {
                   color: Colors.white,
                 ),
               ),
-              // Símbolo de la moneda
               Text(
                 coin.symbol.toUpperCase(),
                 style: TextStyle(
@@ -177,7 +174,6 @@ class CoinCard extends StatelessWidget {
                       'N/A',
                       style: TextStyle(color: Colors.white),
                     ),
-              // Porcentaje de cambio
               if (coin.priceChange != null)
                 Text(
                   '${coin.priceChange! >= 0 ? '+' : ''}${coin.priceChange!.toStringAsFixed(2)}%',

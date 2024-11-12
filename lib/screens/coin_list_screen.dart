@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:prueba_helipagos_mobile/blocs/coin_bloc.dart';
 import 'package:prueba_helipagos_mobile/events/coin_event.dart';
 import 'package:prueba_helipagos_mobile/models/coin.dart';
@@ -13,8 +12,6 @@ class CoinListScreen extends StatefulWidget {
   @override
   CoinListScreenState createState() => CoinListScreenState();
 }
-
-enum CoinFilter { all, topGainers, topLosers }
 
 class CoinListScreenState extends State<CoinListScreen> {
   final ScrollController _scrollController = ScrollController();
@@ -114,7 +111,7 @@ class CoinListScreenState extends State<CoinListScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           FloatingActionButton(
-            heroTag: 'search_fab', // Unique heroTag
+            heroTag: 'search_fab',
             backgroundColor: Colors.blue[900],
             onPressed: () {
               Navigator.pushNamed(context, "/search");
@@ -123,7 +120,7 @@ class CoinListScreenState extends State<CoinListScreen> {
           ),
           const SizedBox(height: 16),
           FloatingActionButton(
-            heroTag: 'filter_fab', // Unique heroTag
+            heroTag: 'filter_fab',
             backgroundColor: Colors.blue[900],
             onPressed: () {
               _showFilterOptions();
@@ -133,7 +130,7 @@ class CoinListScreenState extends State<CoinListScreen> {
         ],
       ),
       appBar: AppBar(
-        title: const Text('Lista de Monedas'),
+        title: const Text('Mercado Crypto'),
         centerTitle: true,
       ),
       body: BlocBuilder<CoinBloc, CoinState>(
@@ -149,11 +146,9 @@ class CoinListScreenState extends State<CoinListScreen> {
                 _coinBloc.currentPage = 1;
                 _coinBloc.add(const FetchCoins(refresh: true));
               },
-              child: MasonryGridView.count(
+              child: ListView.builder(
+                key: const Key("coinList"),
                 controller: _scrollController,
-                crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
                 padding: const EdgeInsets.all(8),
                 itemCount: state.hasReachedMax
                     ? filteredCoins.length
@@ -161,12 +156,13 @@ class CoinListScreenState extends State<CoinListScreen> {
                 itemBuilder: (context, index) {
                   if (index >= filteredCoins.length) {
                     return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: EdgeInsets.all(16),
                       child: Center(child: CircularProgressIndicator()),
                     );
                   }
                   final Coin coin = filteredCoins[index];
                   return GestureDetector(
+                    key: Key("coinItem_$index"),
                     onTap: () {
                       Navigator.pushNamed(context, '/coin_detail',
                           arguments: coin);
@@ -212,7 +208,8 @@ class CoinCard extends StatelessWidget {
             ),
           ),
           padding: const EdgeInsets.all(16),
-          child: Column(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
             children: [
               if (coin.imageUrl != null)
                 Image.network(
@@ -224,46 +221,59 @@ class CoinCard extends StatelessWidget {
                 )
               else
                 const Icon(Icons.monetization_on, size: 50),
-              const SizedBox(height: 8),
-              Text(
-                coin.name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              // Símbolo de la moneda
-              Text(
-                coin.symbol.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade300,
-                ),
-              ),
-              const SizedBox(height: 8),
-              coin.currentPrice != null
-                  ? Text(
-                      '\$${coin.currentPrice!.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Text(
-                      'N/A',
-                      style: TextStyle(color: Colors.white),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          coin.name,
+                          style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                        Text(
+                          coin.symbol.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade300,
+                          ),
+                        ),
+                      ],
                     ),
-              if (coin.priceChange != null)
-                Text(
-                  '${coin.priceChange! >= 0 ? '+' : ''}${coin.priceChange!.toStringAsFixed(2)}%',
-                  style: TextStyle(
-                    color: coin.priceChange! >= 0
-                        ? Colors.greenAccent
-                        : Colors.redAccent,
-                    fontSize: 14,
-                  ),
+                    Column(
+                      children: [
+                        coin.currentPrice != null
+                            ? Text(
+                                '\$${coin.currentPrice!.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'N/A',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                        if (coin.priceChange != null)
+                          Text(
+                            '${coin.priceChange! >= 0 ? '+' : ''}${coin.priceChange!.toStringAsFixed(2)}%',
+                            style: TextStyle(
+                              color: coin.priceChange! >= 0
+                                  ? Colors.greenAccent
+                                  : Colors.redAccent,
+                              fontSize: 14,
+                            ),
+                          ),
+                      ],
+                    )
+                  ],
                 ),
+              ),
             ],
           ),
         ),
@@ -271,3 +281,5 @@ class CoinCard extends StatelessWidget {
     );
   }
 }
+
+enum CoinFilter { all, topGainers, topLosers }

@@ -11,6 +11,7 @@ import 'package:prueba_helipagos_mobile/screens/coin_list_screen.dart';
 import 'package:prueba_helipagos_mobile/screens/search_screen.dart';
 import 'package:prueba_helipagos_mobile/screens/nft_list_screen.dart';
 import 'package:prueba_helipagos_mobile/screens/coin_detail_screen.dart';
+import 'package:prueba_helipagos_mobile/screens/welcome_screen.dart';
 import 'package:prueba_helipagos_mobile/services/api_service.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
@@ -125,6 +126,7 @@ class MainAppState extends State<MainApp> {
       },
       routes: {
         '/splash': (context) => const SplashScreen(),
+        "/welcome": (context) => const WelcomeScreen(),
         '/search': (context) => const SearchScreen(),
         '/home': (context) => Scaffold(
               body: _screens[_currentIndex],

@@ -22,18 +22,23 @@ class _NftListScreenState extends State<NftListScreen> {
     super.initState();
     _nftBloc = BlocProvider.of<NftBloc>(context);
     _nftBloc.add(FetchNfts());
+    _scrollController.addListener(_onScroll);
+  }
 
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
-              _scrollController.position.maxScrollExtent - 200 &&
-          !_nftBloc.isFetching &&
-          !(_nftBloc.state is! NftLoading)) {
-        final state = _nftBloc.state;
-        if (state is NftLoaded) {
-          _nftBloc.add(FetchNfts());
-        }
+  void _onScroll() {
+    if (_isBottom && !_nftBloc.isFetching) {
+      final currentState = _nftBloc.state;
+      if (currentState is NftLoaded && !currentState.hasReachedMax) {
+        _nftBloc.add(FetchMoreNfts());
       }
-    });
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    return currentScroll >= (maxScroll - 200);
   }
 
   @override
@@ -46,7 +51,7 @@ class _NftListScreenState extends State<NftListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de NFTs'),
+        title: const Text('Mercado NFTs'),
         centerTitle: true,
       ),
       body: BlocBuilder<NftBloc, NftState>(
@@ -59,11 +64,12 @@ class _NftListScreenState extends State<NftListScreen> {
               return const Center(child: Text('No hay NFTs disponibles'));
             }
             return ListView.builder(
+              key: const Key("nftsList"),
               controller: _scrollController,
               itemCount: nfts.length,
               itemBuilder: (context, index) {
                 final Nft nft = nfts[index];
-                return NftCard(nft: nft);
+                return NftCard(key: Key("nftItem_$index"), nft: nft);
               },
             );
           } else if (state is NftError) {
@@ -90,6 +96,7 @@ class NftCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      key: Key("nft_${nft.assetPlatformId}"),
       elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),

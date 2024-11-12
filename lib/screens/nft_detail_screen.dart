@@ -54,7 +54,6 @@ class NftDetailScreenState extends State<NftDetailScreen> {
             return SingleChildScrollView(
               child: Column(
                 children: [
-                  // Imagen de encabezado
                   Stack(
                     children: [
                       if (nft.bannerImage != null)
@@ -97,7 +96,6 @@ class NftDetailScreenState extends State<NftDetailScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       children: [
-                        // Tarjeta de descripción
                         Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(
@@ -131,7 +129,6 @@ class NftDetailScreenState extends State<NftDetailScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        // Tarjeta de detalles
                         Card(
                           elevation: 4,
                           shape: RoundedRectangleBorder(
