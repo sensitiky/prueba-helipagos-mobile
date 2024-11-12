@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prueba_helipagos_mobile/models/nft.dart';
 import 'package:prueba_helipagos_mobile/services/api_service.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class NftDetailScreen extends StatefulWidget {
   final String assetPlatformId;
@@ -116,11 +117,15 @@ class NftDetailScreenState extends State<NftDetailScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 8),
-                                Text(
-                                  nft.description ?? 'N/A',
-                                  style: const TextStyle(
-                                      fontSize: 16, color: Colors.grey),
-                                ),
+                                Html(
+                                  data: nft.description ?? 'N/A',
+                                  style: {
+                                    "body": Style(
+                                      fontSize: FontSize(16.0),
+                                      color: Colors.grey,
+                                    ),
+                                  },
+                                )
                               ],
                             ),
                           ),
