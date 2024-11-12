@@ -48,7 +48,7 @@ class ApiService {
 
   Future<List<Nft>> fetchNfts() async {
     final response = await http.get(
-      Uri.parse("$baseUrl/nfts/list?x-cg-demo-api-key=$apiKey"),
+      Uri.parse("$baseUrl/nfts/list?per_page=10&x-cg-demo-api-key=$apiKey"),
     );
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
