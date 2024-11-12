@@ -109,19 +109,25 @@ prueba_helipagos_mobile/
 │ │ └── nft_event.dart
 │ ├── models/
 │ │ ├── coin.dart
+│ │ ├── env.dart
 │ │ └── nft.dart
 │ ├── screens/
 │ │ ├── coin_detail_screen.dart
 │ │ ├── coin_list_screen.dart
+│ │ ├── nft_detail_screen.dart
 │ │ ├── nft_list_screen.dart
 │ │ ├── search_screen.dart
-│ │ └── splash_screen.dart
+│ │ ├── splash_screen.dart
+│ │ └── welcome_screen.dart
 │ ├── services/
 │ │ └── api_service.dart
 │ ├── state/
-│ │ └── coin_state.dart
+│ │ ├── coin_state.dart
+│ │ └── nft_state.dart
 │ └── main.dart
 ├── test/
+├── integration_test/
+│    └──app_test.dartdart
 ├── pubspec.yaml
 └── README.md
 ```
@@ -133,11 +139,12 @@ prueba_helipagos_mobile/
 - **lib/:** Contiene el código fuente de la aplicación.
   - **blocs/:** Implementación de los BLoCs para criptomonedas y NFTs.
   - **events/:** Definición de los eventos para los BLoCs.
-  - **models/:** Modelos de datos para criptomonedas y NFTs.
+  - **models/:** Modelos de datos para criptomonedas, NFTs y variables de entorno.
   - **screens/:** Interfaces de usuario de las diferentes pantallas.
   - **services/:** Servicios para interactuar con APIs externas.
   - **state/:** Definición de los estados para los BLoCs.
   - **main.dart:** Punto de entrada de la aplicación.
-- **test/:** Pruebas unitarias y de integración.
+- **test/:** Pruebas unitarias.
+- **integration_test/:** Pruebas de integración.
 - **pubspec.yaml:** Gestión de dependencias y configuraciones del proyecto.
 - **README.md:** Este archivo de documentación.
