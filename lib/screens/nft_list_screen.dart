@@ -29,7 +29,7 @@ class _NftListScreenState extends State<NftListScreen> {
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent - 200 &&
           !_nftBloc.isFetching &&
-          !_nftBloc.state.props.contains(true)) {
+          !(_nftBloc.state is! NftLoading)) {
         final state = _nftBloc.state;
         if (state is NftLoaded) {
           _nftBloc.add(FetchNfts());
@@ -119,6 +119,7 @@ class NftCard extends StatefulWidget {
 class NftCardState extends State<NftCard> {
   String? _bannerImageUrl;
   final ApiService _apiService = ApiService();
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -132,13 +133,15 @@ class NftCardState extends State<NftCard> {
         widget.nft.assetPlatformId!,
         widget.nft.contractAddress!,
       );
+      if (!mounted) return;
       setState(() {
         _bannerImageUrl = nftDetails.bannerImage;
       });
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("$error")));
+      setState(() {
+        _hasError = true;
+      });
     }
   }
 
@@ -152,18 +155,53 @@ class NftCardState extends State<NftCard> {
       child: Column(
         children: [
           if (_bannerImageUrl != null)
-            Image.network(
-              _bannerImageUrl!,
-              width: double.infinity,
-              height: 150,
-              fit: BoxFit.cover,
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
+              child: Image.network(
+                _bannerImageUrl!,
+                width: double.infinity,
+                height: 150,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, progress) {
+                  if (progress == null) return child;
+                  return Container(
+                    width: double.infinity,
+                    height: 150,
+                    color: Colors.grey[300],
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: double.infinity,
+                  height: 150,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.broken_image,
+                      size: 50, color: Colors.red),
+                ),
+              ),
+            )
+          else if (_hasError)
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
+              child: Container(
+                width: double.infinity,
+                height: 150,
+                color: Colors.grey[300],
+                child: const Icon(Icons.error, size: 50, color: Colors.red),
+              ),
             )
           else
-            Container(
-              width: double.infinity,
-              height: 150,
-              color: Colors.grey[300],
-              child: const Icon(Icons.image, size: 50),
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
+              child: Container(
+                width: double.infinity,
+                height: 150,
+                color: Colors.grey[300],
+                child: const Icon(Icons.image, size: 50, color: Colors.grey),
+              ),
             ),
           ListTile(
             title: Text(widget.nft.name ?? 'Sin Nombre'),

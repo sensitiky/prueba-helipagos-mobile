@@ -6,3 +6,5 @@ abstract class NftEvent extends Equatable {
 }
 
 class FetchNfts extends NftEvent {}
+
+class FetchMoreNfts extends NftEvent {}

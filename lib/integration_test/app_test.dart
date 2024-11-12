@@ -24,7 +24,7 @@ void main() {
             create: (context) => CoinBloc(apiService),
           ),
           BlocProvider<NftBloc>(
-            create: (context) => NftBloc(apiService),
+            create: (context) => NftBloc(apiService: apiService),
           ),
         ],
         child: const app.MainApp(),

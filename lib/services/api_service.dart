@@ -1,13 +1,17 @@
+// api_service.dart
 import 'dart:convert';
 import 'package:prueba_helipagos_mobile/models/coin.dart';
 import 'package:http/http.dart' as http;
 import 'package:prueba_helipagos_mobile/models/nft.dart';
+import 'rate_limiter.dart';
 
 class ApiService {
   final String baseUrl = "https://api.coingecko.com/api/v3";
   final String apiKey = "CG-U9S4KQMw5EqVq52GthUdMjMU";
 
-  final Map<String, String> _nftImageCache = {};
+  final Map<String, Nft> _nftCache = {};
+  final RateLimiter _rateLimiter =
+      RateLimiter(maxRequests: 30, period: const Duration(minutes: 1));
 
   Future<List<Coin>> fetchCoins({int page = 1, int perPage = 10}) async {
     final response = await http.get(Uri.parse(
@@ -46,9 +50,10 @@ class ApiService {
     }
   }
 
-  Future<List<Nft>> fetchNfts() async {
+  Future<List<Nft>> fetchNfts({int page = 1, int perPage = 10}) async {
     final response = await http.get(
-      Uri.parse("$baseUrl/nfts/list?per_page=10&x-cg-demo-api-key=$apiKey"),
+      Uri.parse(
+          "$baseUrl/nfts/list?per_page=$perPage&page=$page&x-cg-demo-api-key=$apiKey"),
     );
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
@@ -61,13 +66,12 @@ class ApiService {
 
   Future<Nft> fetchNftDetails(
       String assetPlatformId, String contractAddress) async {
+    await _rateLimiter.acquire();
+
     final cacheKey = "$assetPlatformId-$contractAddress";
 
-    if (_nftImageCache.containsKey(cacheKey)) {
-      return Nft(
-        assetPlatformId: assetPlatformId,
-        contractAddress: contractAddress,
-      );
+    if (_nftCache.containsKey(cacheKey)) {
+      return _nftCache[cacheKey]!;
     }
 
     final url =
@@ -76,7 +80,7 @@ class ApiService {
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
       final nft = Nft.fromJson(data);
-
+      _nftCache[cacheKey] = nft; // Almacena en caché
       return nft;
     } else if (response.statusCode == 429) {
       throw Exception(
