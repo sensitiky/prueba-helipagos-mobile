@@ -38,8 +38,6 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final coinBloc = BlocProvider.of<CoinBloc>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Buscar Monedas'),
