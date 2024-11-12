@@ -11,6 +11,7 @@ class NftListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Lista de NFTs'),
         backgroundColor: Colors.white,
         elevation: 0,
