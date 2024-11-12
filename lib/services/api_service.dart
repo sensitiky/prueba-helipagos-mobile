@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:prueba_helipagos_mobile/models/coin.dart';
 import 'package:http/http.dart' as http;
+import 'package:prueba_helipagos_mobile/models/env.dart';
 import 'package:prueba_helipagos_mobile/models/nft.dart';
 
 class ApiService {
-  final String baseUrl = "https://api.coingecko.com/api/v3";
-  final String apiKey = "CG-U9S4KQMw5EqVq52GthUdMjMU";
+  final String baseUrl = Env.baseUrl;
+  final String apiKey = Env.apiKey;
 
   final Map<String, Nft> _nftCache = {};
 

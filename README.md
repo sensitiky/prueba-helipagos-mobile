@@ -2,7 +2,8 @@
 
 ### Descripción
 
-Prueba Helipagos Mobile es una aplicación móvil desarrollada con Flutter que permite a los usuarios explorar y gestionar información relacionada con criptomonedas y NFTs utilizando la API de CoinGecko. La aplicación implementa el patrón BLoC para una gestión eficiente del estado y ofrece una interfaz intuitiva para una experiencia de usuario fluida.
+Token Wave es una aplicación móvil desarrollada con Flutter que permite a los usuarios explorar y gestionar información relacionada con criptomonedas y NFTs utilizando la API de CoinGecko.
+La aplicación implementa el patrón BLoC para una gestión eficiente del estado y ofrece una interfaz intuitiva para una experiencia de usuario fluida.
 
 ### Características
 
@@ -10,6 +11,7 @@ Prueba Helipagos Mobile es una aplicación móvil desarrollada con Flutter que p
 - **Detalle de Criptomonedas:** Obtiene información detallada de cada criptomoneda seleccionada.
 - **Búsqueda de Criptomonedas:** Permite a los usuarios buscar criptomonedas específicas.
 - **Listado de NFTs:** Muestra una lista de NFTs disponibles.
+- **Detalle de NFTs:** Obtiene información detallada de cada nft seleccionado.
 - **Gestión del Estado con BLoC:** Utiliza el patrón BLoC para manejar el estado de la aplicación de manera eficiente.
 - **Obfuscación del Código:** Protege el código fuente mediante la obfuscación durante la construcción del APK.
 - **Separación de Información de Depuración:** Divide la información de depuración para mejorar la seguridad y el rendimiento.
@@ -30,6 +32,47 @@ Prueba Helipagos Mobile es una aplicación móvil desarrollada con Flutter que p
 - **Android Studio o VS Code:** IDE recomendado para el desarrollo.
 - **Dispositivo o Emulador Android/iOS:** Para ejecutar y probar la aplicación.
 - **Cuenta de CoinGecko:** Obtener una clave API si es necesario.
+
+### Configuración de Variables de Entorno
+
+Esta aplicación utiliza variables de entorno para manejar información sensible como claves API.
+A continuación se detallan los pasos para configurar correctamente las variables de entorno sin incluir datos sensibles en el código fuente.
+
+1. **Crear el Archivo `.env`**
+
+En la raíz del proyecto, crea un archivo llamado `.env`. Este archivo no debe ser versionado y ya está incluido en el archivo `.gitignore` para evitar su subida al repositorio.
+
+2. **Definir las Variables de Entorno**
+
+Abre el archivo `.env` y define las siguientes variables:
+
+```properties
+API_KEY=tu_clave_api_aquí
+BASE_URL=https://api.coingecko.com/api/v3
+```
+
+<sup>La clave API se encuentra incluida en el Drive con los datos sensibles.</sup>
+
+3. **Generar el Código de Configuración**
+   Después de configurar el archivo .env, ejecuta el siguiente comando para generar el archivo env.g.dart necesario:
+
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+_Este comando utilizará el paquete envied para generar las constantes de acceso a las variables de entorno._
+
+4. **Uso de Variables de Entorno en el Código**
+   Accede a las variables de entorno en tu código Dart mediante la clase Env. Por ejemplo:
+
+```dart
+//import 'package:nombre_de_tu_aplicacion/models/env.dart';
+///En el caso de esta aplicación
+import 'package:prueba_helipagos_mobile/models/env.dart';
+
+final String apiKey = Env.apiKey;
+final String baseUrl = Env.baseUrl;
+```
 
 ### Uso
 
