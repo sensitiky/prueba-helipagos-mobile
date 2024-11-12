@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:prueba_helipagos_mobile/blocs/nft_bloc.dart';
 import 'package:prueba_helipagos_mobile/events/nft_event.dart';
-import 'package:prueba_helipagos_mobile/services/api_service.dart';
 import 'package:prueba_helipagos_mobile/states/nft_state.dart';
 import 'package:prueba_helipagos_mobile/models/nft.dart';
 import 'package:prueba_helipagos_mobile/screens/nft_detail_screen.dart';
@@ -60,36 +58,13 @@ class _NftListScreenState extends State<NftListScreen> {
             if (nfts.isEmpty) {
               return const Center(child: Text('No hay NFTs disponibles'));
             }
-            return RefreshIndicator(
-              onRefresh: () async {
-                _nftBloc.currentPage = 1;
-                _nftBloc.add(FetchNfts());
+            return ListView.builder(
+              controller: _scrollController,
+              itemCount: nfts.length,
+              itemBuilder: (context, index) {
+                final Nft nft = nfts[index];
+                return NftCard(nft: nft);
               },
-              child: MasonryGridView.count(
-                controller: _scrollController,
-                crossAxisCount: 2,
-                mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                padding: const EdgeInsets.all(8),
-                itemCount: nfts.length,
-                itemBuilder: (context, index) {
-                  final Nft nft = nfts[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NftDetailScreen(
-                            assetPlatformId: nft.assetPlatformId!,
-                            contractAddress: nft.contractAddress!,
-                          ),
-                        ),
-                      );
-                    },
-                    child: NftCard(nft: nft),
-                  );
-                },
-              ),
             );
           } else if (state is NftError) {
             return Center(
@@ -107,43 +82,10 @@ class _NftListScreenState extends State<NftListScreen> {
   }
 }
 
-class NftCard extends StatefulWidget {
+class NftCard extends StatelessWidget {
   final Nft nft;
 
   const NftCard({required this.nft, super.key});
-
-  @override
-  NftCardState createState() => NftCardState();
-}
-
-class NftCardState extends State<NftCard> {
-  String? _bannerImageUrl;
-  final ApiService _apiService = ApiService();
-  bool _hasError = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchBannerImage();
-  }
-
-  Future<void> _fetchBannerImage() async {
-    try {
-      final nftDetails = await _apiService.fetchNftDetails(
-        widget.nft.assetPlatformId!,
-        widget.nft.contractAddress!,
-      );
-      if (!mounted) return;
-      setState(() {
-        _bannerImageUrl = nftDetails.bannerImage;
-      });
-    } catch (error) {
-      if (!mounted) return;
-      setState(() {
-        _hasError = true;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,62 +94,22 @@ class NftCardState extends State<NftCard> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        children: [
-          if (_bannerImageUrl != null)
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Image.network(
-                _bannerImageUrl!,
-                width: double.infinity,
-                height: 150,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return Container(
-                    width: double.infinity,
-                    height: 150,
-                    color: Colors.grey[300],
-                    child: const Center(child: CircularProgressIndicator()),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: double.infinity,
-                  height: 150,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.broken_image,
-                      size: 50, color: Colors.red),
-                ),
-              ),
-            )
-          else if (_hasError)
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Container(
-                width: double.infinity,
-                height: 150,
-                color: Colors.grey[300],
-                child: const Icon(Icons.error, size: 50, color: Colors.red),
-              ),
-            )
-          else
-            ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Container(
-                width: double.infinity,
-                height: 150,
-                color: Colors.grey[300],
-                child: const Icon(Icons.image, size: 50, color: Colors.grey),
+      child: ListTile(
+        leading: const Icon(Icons.image, color: Colors.blue),
+        title: Text(nft.name ?? 'Sin Nombre'),
+        subtitle: Text('Contrato: ${nft.contractAddress ?? 'N/A'}'),
+        trailing: const Icon(Icons.arrow_forward),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NftDetailScreen(
+                assetPlatformId: nft.assetPlatformId!,
+                contractAddress: nft.contractAddress!,
               ),
             ),
-          ListTile(
-            title: Text(widget.nft.name ?? 'Sin Nombre'),
-            subtitle: Text('Contrato: ${widget.nft.contractAddress ?? 'N/A'}'),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
