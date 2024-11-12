@@ -12,6 +12,7 @@ Coin _$CoinFromJson(Map<String, dynamic> json) => Coin(
       name: json['name'] as String,
       imageUrl: json['image'] as String?,
       currentPrice: (json['current_price'] as num?)?.toDouble(),
+      priceChange: (json['price_change_percentage_24h'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$CoinToJson(Coin instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$CoinToJson(Coin instance) => <String, dynamic>{
       'name': instance.name,
       'image': instance.imageUrl,
       'current_price': instance.currentPrice,
+      'price_change_percentage_24h': instance.priceChange,
     };

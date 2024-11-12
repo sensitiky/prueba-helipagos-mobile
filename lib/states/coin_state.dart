@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../models/coin.dart';
+import 'package:prueba_helipagos_mobile/models/coin.dart';
 
 abstract class CoinState extends Equatable {
   const CoinState();

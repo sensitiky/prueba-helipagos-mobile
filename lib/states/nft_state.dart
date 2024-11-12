@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../models/nft.dart';
+import 'package:prueba_helipagos_mobile/models/nft.dart';
 
 abstract class NftState extends Equatable {
   @override

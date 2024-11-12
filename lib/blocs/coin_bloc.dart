@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../services/api_service.dart';
-import '../events/coin_event.dart';
-import '../states/coin_state.dart';
+import 'package:prueba_helipagos_mobile/events/coin_event.dart';
+import 'package:prueba_helipagos_mobile/services/api_service.dart';
+import 'package:prueba_helipagos_mobile/states/coin_state.dart';
 
 class CoinBloc extends Bloc<CoinEvent, CoinState> {
   final ApiService apiService;

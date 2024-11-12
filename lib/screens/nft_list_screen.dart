@@ -1,74 +1,95 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/nft_bloc.dart';
-import '../states/nft_state.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:prueba_helipagos_mobile/blocs/nft_bloc.dart';
+import 'package:prueba_helipagos_mobile/events/nft_event.dart';
+import 'package:prueba_helipagos_mobile/services/api_service.dart';
+import 'package:prueba_helipagos_mobile/states/nft_state.dart';
+import 'package:prueba_helipagos_mobile/models/nft.dart';
+import 'package:prueba_helipagos_mobile/screens/nft_detail_screen.dart';
 
-class NftListScreen extends StatelessWidget {
+class NftListScreen extends StatefulWidget {
   const NftListScreen({super.key});
+
+  @override
+  State<NftListScreen> createState() => _NftListScreenState();
+}
+
+class _NftListScreenState extends State<NftListScreen> {
+  final ScrollController _scrollController = ScrollController();
+  late NftBloc _nftBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _nftBloc = BlocProvider.of<NftBloc>(context);
+    _nftBloc.add(FetchNfts());
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 200 &&
+          !_nftBloc.isFetching &&
+          !_nftBloc.state.props.contains(true)) {
+        final state = _nftBloc.state;
+        if (state is NftLoaded) {
+          _nftBloc.add(FetchNfts());
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: const Text('Lista de NFTs'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        titleTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
+        centerTitle: true,
       ),
       body: BlocBuilder<NftBloc, NftState>(
         builder: (context, state) {
-          if (state is NftLoading) {
-            return const Center(child: CupertinoActivityIndicator());
+          if (state is NftLoading && _nftBloc.currentPage == 1) {
+            return const Center(child: CircularProgressIndicator());
           } else if (state is NftLoaded) {
             final nfts = state.nfts;
-            return ListView.separated(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: nfts.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final nft = nfts[index];
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  elevation: 4,
-                  shadowColor: Colors.grey.withOpacity(0.3),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(16.0),
-                    title: Text(
-                      nft.name ?? 'Sin Nombre',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Contrato: ${nft.contractAddress ?? 'N/A'}',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Plataforma: ${nft.assetPlatformId ?? 'N/A'}',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
+            if (nfts.isEmpty) {
+              return const Center(child: Text('No hay NFTs disponibles'));
+            }
+            return RefreshIndicator(
+              onRefresh: () async {
+                _nftBloc.currentPage = 1;
+                _nftBloc.add(FetchNfts());
               },
+              child: MasonryGridView.count(
+                controller: _scrollController,
+                crossAxisCount: 2,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                padding: const EdgeInsets.all(8),
+                itemCount: nfts.length,
+                itemBuilder: (context, index) {
+                  final Nft nft = nfts[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NftDetailScreen(
+                            assetPlatformId: nft.assetPlatformId!,
+                            contractAddress: nft.contractAddress!,
+                          ),
+                        ),
+                      );
+                    },
+                    child: NftCard(nft: nft),
+                  );
+                },
+              ),
             );
           } else if (state is NftError) {
             return Center(
@@ -78,14 +99,77 @@ class NftListScreen extends StatelessWidget {
               ),
             );
           } else {
-            return const Center(
-              child: Text(
-                'No hay datos disponibles',
-                style: TextStyle(fontSize: 16),
-              ),
-            );
+            return const Center(child: Text('No hay datos disponibles'));
           }
         },
+      ),
+    );
+  }
+}
+
+class NftCard extends StatefulWidget {
+  final Nft nft;
+
+  const NftCard({required this.nft, super.key});
+
+  @override
+  NftCardState createState() => NftCardState();
+}
+
+class NftCardState extends State<NftCard> {
+  String? _bannerImageUrl;
+  final ApiService _apiService = ApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBannerImage();
+  }
+
+  Future<void> _fetchBannerImage() async {
+    try {
+      final nftDetails = await _apiService.fetchNftDetails(
+        widget.nft.assetPlatformId!,
+        widget.nft.contractAddress!,
+      );
+      setState(() {
+        _bannerImageUrl = nftDetails.bannerImage;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("$error")));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          if (_bannerImageUrl != null)
+            Image.network(
+              _bannerImageUrl!,
+              width: double.infinity,
+              height: 150,
+              fit: BoxFit.cover,
+            )
+          else
+            Container(
+              width: double.infinity,
+              height: 150,
+              color: Colors.grey[300],
+              child: const Icon(Icons.image, size: 50),
+            ),
+          ListTile(
+            title: Text(widget.nft.name ?? 'Sin Nombre'),
+            subtitle: Text('Contrato: ${widget.nft.contractAddress ?? 'N/A'}'),
+          ),
+        ],
       ),
     );
   }

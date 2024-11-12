@@ -13,13 +13,16 @@ class Coin {
 
   @JsonKey(name: 'current_price')
   final double? currentPrice;
+  @JsonKey(name: 'price_change_percentage_24h')
+  final double? priceChange;
 
   Coin(
       {required this.id,
       required this.symbol,
       required this.name,
       this.imageUrl,
-      this.currentPrice});
+      this.currentPrice,
+      this.priceChange});
 
   factory Coin.fromJson(Map<String, dynamic> json) => _$CoinFromJson(json);
 

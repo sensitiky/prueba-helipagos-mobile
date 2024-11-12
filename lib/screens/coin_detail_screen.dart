@@ -1,38 +1,33 @@
 import 'package:flutter/material.dart';
-import '../models/coin.dart';
+import 'package:prueba_helipagos_mobile/models/coin.dart';
 
 class CoinDetailScreen extends StatefulWidget {
-  const CoinDetailScreen({super.key});
+  final Coin coin;
+
+  const CoinDetailScreen({super.key, required this.coin});
 
   @override
   CoinDetailScreenState createState() => CoinDetailScreenState();
 }
 
 class CoinDetailScreenState extends State<CoinDetailScreen> {
-  late Coin coin;
   final TextEditingController capitalController = TextEditingController();
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    coin = ModalRoute.of(context)!.settings.arguments as Coin;
+  void dispose() {
+    capitalController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final Coin coin = widget.coin;
+
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: const Text("Detalles"),
-        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.black),
-        titleTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -54,17 +49,32 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 28,
-                color: Colors.black87,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               coin.name,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
-                color: Colors.grey[700],
               ),
             ),
+            coin.currentPrice != null
+                ? Text(
+                    '1 ${coin.symbol.toUpperCase()} = \$${coin.currentPrice!.toStringAsFixed(3)} USD\n 1 USD = ${(1 / coin.currentPrice!).toStringAsFixed(3)} ${coin.symbol.toUpperCase()}',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.green[700],
+                      fontWeight: FontWeight.w600,
+                    ),
+                  )
+                : const Text(
+                    'Precio no disponible',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.red,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
             const SizedBox(height: 24),
             Card(
               elevation: 4,
@@ -74,24 +84,6 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    coin.currentPrice != null
-                        ? Text(
-                            'Precio: \$${coin.currentPrice!.toStringAsFixed(2)} USD',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.green[700],
-                              fontWeight: FontWeight.w600,
-                            ),
-                          )
-                        : const Text(
-                            'Precio no disponible',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.red,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                    const SizedBox(height: 24),
                     TextField(
                       controller: capitalController,
                       keyboardType:
@@ -103,7 +95,6 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.grey[200],
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -128,14 +119,10 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
                     Text(
                       capitalController.text.isNotEmpty &&
                               coin.currentPrice != null
-                          ? 'Valor: ${(double.tryParse(capitalController.text) ?? 0) / coin.currentPrice!} ${coin.symbol.toUpperCase()}'
+                          ? 'Valor: ${(double.parse(capitalController.text) / coin.currentPrice!).toStringAsFixed(3)} ${coin.symbol.toUpperCase()}'
                           : 'Ingrese un capital válido',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
-                        color: capitalController.text.isNotEmpty &&
-                                coin.currentPrice != null
-                            ? Colors.black87
-                            : Colors.red[600],
                         fontWeight: FontWeight.w500,
                       ),
                     ),
