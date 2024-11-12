@@ -4,20 +4,15 @@ part 'nft.g.dart';
 
 @JsonSerializable()
 class Nft {
-  final String id;
-  final String name;
+  final String? name;
   @JsonKey(name: 'contract_address')
-  final String contractAddress;
+  final String? contractAddress;
   @JsonKey(name: 'asset_platform_id')
-  final String assetPlatformId;
+  final String? assetPlatformId;
 
-  Nft({
-    required this.id,
-    required this.name,
-    required this.contractAddress,
-    required this.assetPlatformId,
-  });
+  Nft({this.name, this.contractAddress, this.assetPlatformId});
 
   factory Nft.fromJson(Map<String, dynamic> json) => _$NftFromJson(json);
+
   Map<String, dynamic> toJson() => _$NftToJson(this);
 }

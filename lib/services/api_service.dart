@@ -5,7 +5,7 @@ import 'package:prueba_helipagos_mobile/models/nft.dart';
 
 class ApiService {
   final String baseUrl = "https://api.coingecko.com/api/v3";
-  final String apiKey = "";
+  final String apiKey = "CG-U9S4KQMw5EqVq52GthUdMjMU";
 
   Future<List<Coin>> fetchCoins({int page = 1, int perPage = 10}) async {
     final response = await http.get(Uri.parse(
@@ -22,25 +22,23 @@ class ApiService {
     final searchResponse = await http.get(
         Uri.parse("$baseUrl/search?query=$query&x_cg_demo_api_key=$apiKey"));
     if (searchResponse.statusCode == 200) {
-      var searchData = json.decode(searchResponse.body);
-      List<dynamic> coinsData = searchData['coins'];
-      List<Coin> fullCoins = [];
-      for (var coin in coinsData) {
-        String coinId = coin['id'];
-        try {
-          final coinDetailResponse = await http.get(Uri.parse(
-              "$baseUrl/coins/markets?vs_currency=usd&ids=$coinId&order=market_cap_desc&per_page=1&page=1&sparkline=false&x_cg_demo_api_key=$apiKey"));
-          if (coinDetailResponse.statusCode == 200) {
-            List<dynamic> detailData = json.decode(coinDetailResponse.body);
-            if (detailData.isNotEmpty) {
-              fullCoins.add(Coin.fromJson(detailData[0]));
-            }
-          }
-        } catch (e) {
-          continue;
-        }
+      Map<String, dynamic> searchData = json.decode(searchResponse.body);
+      List<dynamic> coins = searchData['coins'];
+      List<String> coinIds =
+          coins.map<String>((coin) => coin['id'] as String).toList();
+
+      if (coinIds.isEmpty) {
+        return [];
       }
-      return fullCoins;
+
+      final coinsDataResponse = await http.get(Uri.parse(
+          "$baseUrl/coins/markets?vs_currency=usd&ids=${coinIds.join(',')}&order=market_cap_desc&per_page=${coinIds.length}&page=1&sparkline=false&x_cg_demo_api_key=$apiKey"));
+      if (coinsDataResponse.statusCode == 200) {
+        List<dynamic> coinsData = json.decode(coinsDataResponse.body);
+        return coinsData.map((coin) => Coin.fromJson(coin)).toList();
+      } else {
+        throw Exception("Error al obtener detalles de monedas");
+      }
     } else {
       throw Exception("Error al buscar monedas");
     }
@@ -50,7 +48,6 @@ class ApiService {
     final response = await http.get(
       Uri.parse("$baseUrl/nfts/list?x_cg_demo_api_key=$apiKey"),
     );
-    print(response.statusCode);
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       return data.map((nft) => Nft.fromJson(nft)).toList();

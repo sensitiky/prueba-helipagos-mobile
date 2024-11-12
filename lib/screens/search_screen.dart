@@ -27,7 +27,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _onSearchChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () {
+    _debounce = Timer(const Duration(milliseconds: 250), () {
       if (value.isNotEmpty) {
         BlocProvider.of<CoinBloc>(context).add(SearchCoins(value));
       } else {
