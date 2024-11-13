@@ -2,73 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 import 'package:prueba_helipagos_mobile/main.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prueba_helipagos_mobile/blocs/coin_bloc.dart';
 import 'package:prueba_helipagos_mobile/blocs/nft_bloc.dart';
-import 'package:prueba_helipagos_mobile/models/coin.dart';
-import 'package:prueba_helipagos_mobile/models/nft.dart';
 import 'package:prueba_helipagos_mobile/screens/coin_list_screen.dart';
 import 'package:prueba_helipagos_mobile/screens/welcome_screen.dart';
 import 'package:prueba_helipagos_mobile/services/api_service.dart';
-import '../test/coin_bloc_test.mocks.dart';
 
 @GenerateMocks([ApiService])
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('App Integration Tests', () {
-    testWidgets('Full flow test', (WidgetTester tester) async {
+  group('App Integration Tests\n', () {
+    testWidgets('Full flow test\n', (WidgetTester tester) async {
       // Create ApiService mock instance
-      final apiService = MockApiService();
-
-      // Mock fetchCoins
-      when(apiService.fetchCoins(
-              page: anyNamed('page'), perPage: anyNamed('perPage')))
-          .thenAnswer((_) async => [
-                Coin(
-                  id: 'bitcoin',
-                  name: 'Bitcoin',
-                  symbol: 'BTC',
-                  currentPrice: 50000.0,
-                  priceChange: 5.0,
-                  imageUrl: 'https://example.com/bitcoin.png',
-                ),
-              ]);
-
-      when(apiService.searchCoins(any)).thenAnswer((_) async => [
-            Coin(
-              id: 'bitcoin',
-              name: 'Bitcoin',
-              symbol: 'BTC',
-              currentPrice: 50000.0,
-              priceChange: 5.0,
-              imageUrl: 'https://example.com/bitcoin.png',
-            )
-          ]);
-
-      // Mock fetchNfts
-      when(apiService.fetchNfts(
-              page: anyNamed('page'), perPage: anyNamed('perPage')))
-          .thenAnswer((_) async => [
-                Nft(
-                  id: 'nft1',
-                  name: 'NFT 1',
-                  contractAddress: '0x123456',
-                  assetPlatformId: 'ethereum',
-                ),
-              ]);
-
-      // Mock fetchNftDetails
-      when(apiService.fetchNftDetails("ethereum", "0x123456"))
-          .thenAnswer((_) async => Nft(
-                id: 'nft1',
-                name: 'NFT 1',
-                contractAddress: '0x123456',
-                assetPlatformId: 'ethereum',
-              ));
-
+      final apiService = ApiService();
       // Start the app with provided blocs
       await tester.pumpWidget(
         MultiBlocProvider(
