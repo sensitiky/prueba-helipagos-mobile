@@ -119,8 +119,8 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
                     Text(
                       capitalController.text.isNotEmpty &&
                               coin.currentPrice != null
-                          ? 'Valor: ${(double.parse(capitalController.text) / coin.currentPrice!).toStringAsFixed(3)} ${coin.symbol.toUpperCase()}'
-                          : 'Ingrese un capital válido',
+                          ? 'Valor: ${(double.parse(capitalController.text) / coin.currentPrice!)} ${coin.symbol.toUpperCase()}'
+                          : 'Ingrese su capital',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
