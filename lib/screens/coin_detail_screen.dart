@@ -1,8 +1,5 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:prueba_helipagos_mobile/models/coin.dart';
-import 'package:prueba_helipagos_mobile/services/api_service.dart';
-import 'package:prueba_helipagos_mobile/widgets/coin_price_chart.dart';
 
 class CoinDetailScreen extends StatefulWidget {
   final Coin coin;
@@ -15,13 +12,6 @@ class CoinDetailScreen extends StatefulWidget {
 
 class CoinDetailScreenState extends State<CoinDetailScreen> {
   final TextEditingController capitalController = TextEditingController();
-  late Future<List<FlSpot>> _priceSpots;
-
-  @override
-  void initState() {
-    super.initState();
-    _priceSpots = ApiService().fetchHistoricalPrices(widget.coin.id);
-  }
 
   @override
   void dispose() {
@@ -100,7 +90,7 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
                           const TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.attach_money),
-                        hintText: 'Ingrese su capital en USD',
+                        hintText: 'Capital',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -136,26 +126,32 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      height: 320,
-                      child: FutureBuilder<List<FlSpot>>(
-                        future: _priceSpots,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else if (snapshot.hasData) {
-                            return CoinPriceChart(
-                              coinId: coin.id,
-                            );
-                          } else {
-                            return const Text("Error al cargar la información");
-                          }
-                        },
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.lightbulb,
+                      color: Colors.amber,
+                      size: 32,
+                    ),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        "Ingresa tu capital en USD para convertirlo al token seleccionado.",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ],

@@ -24,7 +24,9 @@ La aplicación implementa el patrón BLoC para una gestión eficiente del estado
 - **CoinGecko API:** API utilizada para obtener datos de criptomonedas y NFTs.
 - **HTTP:** Biblioteca para realizar solicitudes HTTP.
 - **Equatable:** Paquete para facilitar la comparación de objetos.
-- **Integration Testing:** Prueba de integración para asegurar la calidad del código y el uso del usuario final.
+- **Json Serializable:** Paquete para la generación automática de código de serialización JSON.
+- **Envied:** Paquete para la gestión de variables de entorno de manera segura.
+- **Integration Testing:** Prueba de integración para asegurar la calidad del código y la experiencia del usuario final.
 
 ### Requisitos Previos
 
@@ -98,6 +100,14 @@ flutter build apk --release
 flutter build apk --obfuscate --split-debug-info=./debug_info
 ```
 
+4. **Realizar un test de integración:**
+
+<sup>En la carpeta raíz del proyecto</sup>
+
+```
+dart run test integration_test/
+```
+
 ### Estructura del Proyecto
 
 ```
@@ -129,9 +139,6 @@ prueba_helipagos_mobile/
 │ │ ├── coin_state.dart
 │ │ └── nft_state.dart
 │ └── main.dart
-├── test/
-│  ├──coin_bloc_test.mocks.dart
-│  └──coin_list_screen_test.mocks.dart
 ├── integration_test/
 │    └──app_test.dartdart
 ├── pubspec.yaml
@@ -150,7 +157,6 @@ prueba_helipagos_mobile/
   - **services/:** Servicios para interactuar con APIs externas.
   - **state/:** Definición de los estados para los BLoCs.
   - **main.dart:** Punto de entrada de la aplicación.
-- **test/:** Mocks para la prueba de integración.
 - **integration_test/:** Prueba de integración.
 - **pubspec.yaml:** Gestión de dependencias y configuraciones del proyecto.
 - **README.md:** Este archivo de documentación.

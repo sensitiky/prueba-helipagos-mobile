@@ -19,7 +19,6 @@ dependencies:
   flutter_html: ^3.0.0-beta.2
   flutter_launcher_icons: ^0.14.1
   envied: ^0.5.4+1
-  fl_chart: ^0.69.0
 
 dev_dependencies:
   flutter_test:
@@ -39,7 +38,7 @@ flutter:
     - assets/icon/icon.png
 
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: "ic_launcher"
   ios: true
   image_path: "assets/icon/icon.png"
   remove_alpha_ios: true
