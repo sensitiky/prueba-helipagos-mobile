@@ -1,5 +1,8 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:prueba_helipagos_mobile/models/coin.dart';
+import 'package:prueba_helipagos_mobile/services/api_service.dart';
+import 'package:prueba_helipagos_mobile/widgets/coin_price_chart.dart';
 
 class CoinDetailScreen extends StatefulWidget {
   final Coin coin;
@@ -12,6 +15,13 @@ class CoinDetailScreen extends StatefulWidget {
 
 class CoinDetailScreenState extends State<CoinDetailScreen> {
   final TextEditingController capitalController = TextEditingController();
+  late Future<List<FlSpot>> _priceSpots;
+
+  @override
+  void initState() {
+    super.initState();
+    _priceSpots = ApiService().fetchHistoricalPrices(widget.coin.id);
+  }
 
   @override
   void dispose() {
@@ -60,7 +70,7 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
             ),
             coin.currentPrice != null
                 ? Text(
-                    '1 ${coin.symbol.toUpperCase()} = \$${coin.currentPrice!.toStringAsFixed(3)} USD\n 1 USD = ${(1 / coin.currentPrice!).toStringAsFixed(3)} ${coin.symbol.toUpperCase()}',
+                    '1 ${coin.symbol.toUpperCase()} = \$${coin.currentPrice!.toStringAsFixed(3)} USD\n 1 USD = ${(1 / coin.currentPrice!)} ${coin.symbol.toUpperCase()}',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.green[700],
@@ -90,7 +100,7 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
                           const TextInputType.numberWithOptions(decimal: true),
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.attach_money),
-                        hintText: 'Ingrese el capital en USD',
+                        hintText: 'Ingrese su capital en USD',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -120,10 +130,32 @@ class CoinDetailScreenState extends State<CoinDetailScreen> {
                       capitalController.text.isNotEmpty &&
                               coin.currentPrice != null
                           ? 'Valor: ${(double.parse(capitalController.text) / coin.currentPrice!)} ${coin.symbol.toUpperCase()}'
-                          : 'Ingrese su capital',
+                          : '',
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      height: 320,
+                      child: FutureBuilder<List<FlSpot>>(
+                        future: _priceSpots,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (snapshot.hasData) {
+                            return CoinPriceChart(
+                              coinId: coin.id,
+                            );
+                          } else {
+                            return const Text("Error al cargar la información");
+                          }
+                        },
                       ),
                     ),
                   ],

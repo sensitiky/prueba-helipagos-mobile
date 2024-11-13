@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:prueba_helipagos_mobile/models/coin.dart';
 import 'package:http/http.dart' as http;
 import 'package:prueba_helipagos_mobile/models/env.dart';
@@ -20,7 +21,6 @@ class ApiService {
 
     final response = await http.get(Uri.parse(
         "$baseUrl/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=$perPage&page=$page&sparkline=false&x_cg_demo_api_key=$apiKey"));
-
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       List<Coin> coins = data.map((coin) => Coin.fromJson(coin)).toList();
@@ -65,6 +65,25 @@ class ApiService {
           "Has excedido el límite de solicitudes. Por favor, intenta de nuevo más tarde.");
     } else {
       throw Exception("Error al realizar la búsqueda.");
+    }
+  }
+
+  Future<List<FlSpot>> fetchHistoricalPrices(String coinId) async {
+    final response = await http.get(Uri.parse(
+      '$baseUrl/coins/$coinId/market_chart?vs_currency=usd&days=30&interval=daily&x_cg_demo_api_key=$apiKey',
+    ));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      List<dynamic> prices = data['prices'];
+
+      return prices.asMap().entries.map((entry) {
+        int index = entry.key;
+        double price = entry.value[1];
+        return FlSpot(index.toDouble(), price);
+      }).toList();
+    } else {
+      throw Exception('Error al obtener datos históricos');
     }
   }
 

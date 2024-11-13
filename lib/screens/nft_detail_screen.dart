@@ -32,6 +32,13 @@ class NftDetailScreenState extends State<NftDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final descriptionColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.black;
+    final generalTextColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white
+        : Colors.grey[700];
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle del NFT'),
@@ -106,12 +113,12 @@ class NftDetailScreenState extends State<NftDetailScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Descripción',
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: descriptionColor,
                                   ),
                                 ),
                                 const SizedBox(height: 8),
@@ -120,7 +127,7 @@ class NftDetailScreenState extends State<NftDetailScreen> {
                                   style: {
                                     "body": Style(
                                       fontSize: FontSize(16.0),
-                                      color: Colors.grey,
+                                      color: generalTextColor,
                                     ),
                                   },
                                 )
@@ -139,18 +146,24 @@ class NftDetailScreenState extends State<NftDetailScreen> {
                               ListTile(
                                 leading:
                                     const Icon(Icons.account_balance_wallet),
-                                title: const Text('Contrato'),
-                                subtitle: Text(nft.contractAddress ?? 'N/A'),
+                                title: Text('Contrato',
+                                    style: TextStyle(color: generalTextColor)),
+                                subtitle: Text(
+                                  nft.contractAddress ?? 'N/A',
+                                ),
                               ),
                               ListTile(
                                 leading: const Icon(Icons.language),
-                                title: const Text('Plataforma'),
+                                title: Text('Plataforma',
+                                    style: TextStyle(color: generalTextColor)),
                                 subtitle: Text(nft.assetPlatformId ?? 'N/A'),
                               ),
                               if (nft.nativeCurrencySymbol != null)
                                 ListTile(
                                   leading: const Icon(Icons.attach_money),
-                                  title: const Text('Moneda Nativa'),
+                                  title: Text('Moneda Nativa',
+                                      style:
+                                          TextStyle(color: generalTextColor)),
                                   subtitle: Text(nft.nativeCurrencySymbol!),
                                 ),
                             ],

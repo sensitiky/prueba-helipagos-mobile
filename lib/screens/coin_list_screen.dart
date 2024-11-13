@@ -211,7 +211,11 @@ class CoinCard extends StatelessWidget {
 
     final cardColor = Theme.of(context).brightness == Brightness.dark
         ? Colors.white.withOpacity(0.15)
-        : Colors.black.withOpacity(0.1);
+        : Colors.black12;
+
+    final changePriceColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.greenAccent
+        : const Color(0xFF2D7130);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
@@ -245,18 +249,21 @@ class CoinCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Column(
-                      children: [
-                        Text(
-                          coin.name,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          coin.symbol.toUpperCase(),
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ],
+                    Flexible(
+                      flex: 3,
+                      child: Column(
+                        children: [
+                          Text(
+                            coin.name,
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            coin.symbol.toUpperCase(),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ],
+                      ),
                     ),
                     Column(
                       children: [
@@ -276,7 +283,7 @@ class CoinCard extends StatelessWidget {
                             '${coin.priceChange! >= 0 ? '+' : ''}${coin.priceChange!.toStringAsFixed(2)}%',
                             style: TextStyle(
                               color: coin.priceChange! >= 0
-                                  ? Colors.greenAccent
+                                  ? changePriceColor
                                   : Colors.redAccent,
                               fontSize: 14,
                             ),
