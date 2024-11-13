@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prueba_helipagos_mobile/blocs/coin_bloc.dart';
 import 'package:prueba_helipagos_mobile/events/coin_event.dart';
+import 'package:prueba_helipagos_mobile/main.dart';
 import 'package:prueba_helipagos_mobile/models/coin.dart';
 import 'package:prueba_helipagos_mobile/states/coin_state.dart';
 import 'dart:ui';
@@ -28,8 +29,7 @@ class CoinListScreenState extends State<CoinListScreen> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent - 200 &&
-          !_coinBloc.isFetching &&
-          !_coinBloc.state.props.contains(true)) {
+          !_coinBloc.isFetching) {
         final state = _coinBloc.state;
         if (state is CoinLoaded && !state.hasReachedMax) {
           _coinBloc.add(const FetchCoins());
@@ -104,6 +104,10 @@ class CoinListScreenState extends State<CoinListScreen> {
     );
   }
 
+  void _toggleTheme() {
+    mainAppKey.currentState?.toggleTheme();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,6 +136,12 @@ class CoinListScreenState extends State<CoinListScreen> {
       appBar: AppBar(
         title: const Text('Mercado Crypto'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.brightness_6),
+            onPressed: _toggleTheme,
+          ),
+        ],
       ),
       body: BlocBuilder<CoinBloc, CoinState>(
         builder: (context, state) {
@@ -195,16 +205,24 @@ class CoinCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final borderColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white.withOpacity(0.2)
+        : Colors.black.withOpacity(0.2);
+
+    final cardColor = Theme.of(context).brightness == Brightness.dark
+        ? Colors.white.withOpacity(0.15)
+        : Colors.black.withOpacity(0.1);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: cardColor,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: Colors.white.withOpacity(0.2),
+              color: borderColor,
             ),
           ),
           padding: const EdgeInsets.all(16),
@@ -232,16 +250,11 @@ class CoinCard extends StatelessWidget {
                         Text(
                           coin.name,
                           style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           coin.symbol.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade300,
-                          ),
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ],
                     ),
@@ -252,7 +265,6 @@ class CoinCard extends StatelessWidget {
                                 '\$${coin.currentPrice!.toStringAsFixed(2)}',
                                 style: const TextStyle(
                                   fontSize: 16,
-                                  color: Colors.white,
                                 ),
                               )
                             : const Text(

@@ -16,6 +16,9 @@ import 'package:prueba_helipagos_mobile/services/api_service.dart';
 
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
+
+final GlobalKey<MainAppState> mainAppKey = GlobalKey<MainAppState>();
+
 void main() {
   final apiService = ApiService();
   runApp(
@@ -29,7 +32,7 @@ void main() {
               NftBloc(apiService: apiService)..add(FetchNfts()),
         ),
       ],
-      child: const MainApp(),
+      child: MainApp(key: mainAppKey),
     ),
   );
 }
@@ -41,7 +44,7 @@ class MainApp extends StatefulWidget {
   MainAppState createState() => MainAppState();
 }
 
-class MainAppState extends State<MainApp> {
+class MainAppState extends State<MainApp> with WidgetsBindingObserver {
   int _currentIndex = 0;
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   bool _hasInternet = true;
@@ -58,9 +61,21 @@ class MainAppState extends State<MainApp> {
     });
   }
 
+  void toggleTheme() {
+    setState(() {
+      _isDarkTheme = !_isDarkTheme;
+    });
+  }
+
+  bool get isDarkTheme => _isDarkTheme;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _isDarkTheme =
+        WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+            Brightness.dark;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _connectivitySubscription = Connectivity()
@@ -82,16 +97,38 @@ class MainAppState extends State<MainApp> {
   }
 
   @override
+  void didChangePlatformBrightness() {
+    setState(() {
+      _isDarkTheme =
+          WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+              Brightness.dark;
+    });
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _connectivitySubscription.cancel();
     super.dispose();
   }
 
-  void toggleTheme() {
-    setState(() {
-      _isDarkTheme = !_isDarkTheme;
-    });
-  }
+  final ThemeData lightTheme = ThemeData(
+    brightness: Brightness.light,
+    primaryColor: Colors.blue,
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.blue[900],
+      foregroundColor: Colors.white,
+    ),
+  );
+
+  final ThemeData darkTheme = ThemeData(
+    brightness: Brightness.dark,
+    primaryColor: Colors.black,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.black,
+      foregroundColor: Colors.white,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +136,7 @@ class MainAppState extends State<MainApp> {
       scaffoldMessengerKey: scaffoldMessengerKey,
       title: 'CoinGecko App',
       initialRoute: '/splash',
-      theme: ThemeData.dark(),
+      theme: _isDarkTheme ? darkTheme : lightTheme,
       debugShowCheckedModeBanner: false,
       onGenerateRoute: (settings) {
         if (settings.name == '/coin_detail') {
@@ -143,7 +180,7 @@ class MainAppState extends State<MainApp> {
                     label: 'NFTs',
                   ),
                 ],
-                selectedItemColor: Colors.blue,
+                selectedItemColor: Colors.blue[900],
               ),
             ),
       },

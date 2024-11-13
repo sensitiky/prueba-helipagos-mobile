@@ -24,7 +24,7 @@ La aplicación implementa el patrón BLoC para una gestión eficiente del estado
 - **CoinGecko API:** API utilizada para obtener datos de criptomonedas y NFTs.
 - **HTTP:** Biblioteca para realizar solicitudes HTTP.
 - **Equatable:** Paquete para facilitar la comparación de objetos.
-- **Unit Testing:** Pruebas unitarias para asegurar la calidad del código.
+- **Integration Testing:** Prueba de integración para asegurar la calidad del código y el uso del usuario final.
 
 ### Requisitos Previos
 
@@ -54,13 +54,17 @@ BASE_URL=https://api.coingecko.com/api/v3
 <sup>La clave API se encuentra incluida en el Drive con los datos sensibles.</sup>
 
 3. **Generar el Código de Configuración**
-   Después de configurar el archivo .env, ejecuta el siguiente comando para generar el archivo env.g.dart necesario:
+   Después de configurar el archivo .env, ejecuta el siguiente comando para generar los archivos:
+   - **env.g.dart**
+   - **coin.g.dart**
+   - **nft.g.dart**
 
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-_Este comando utilizará el paquete envied para generar las constantes de acceso a las variables de entorno._
+_Este comando utilizará el paquete envied para generar las constantes de acceso a las variables de entorno. Además, creará automáticamente el código para convertir hacia y desde JSON mediante la anotación de clases Dart._
+<sup>En este repositorio ya se encuentras las clases tanto de acceso a las variables de entorno y las clases de conversión fromJson y ToJson</sup>
 
 4. **Uso de Variables de Entorno en el Código**
    Accede a las variables de entorno en tu código Dart mediante la clase Env. Por ejemplo:
@@ -126,6 +130,8 @@ prueba_helipagos_mobile/
 │ │ └── nft_state.dart
 │ └── main.dart
 ├── test/
+│  ├──coin_bloc_test.mocks.dart
+│  └──coin_list_screen_test.mocks.dart
 ├── integration_test/
 │    └──app_test.dartdart
 ├── pubspec.yaml
@@ -144,7 +150,7 @@ prueba_helipagos_mobile/
   - **services/:** Servicios para interactuar con APIs externas.
   - **state/:** Definición de los estados para los BLoCs.
   - **main.dart:** Punto de entrada de la aplicación.
-- **test/:** Pruebas unitarias.
-- **integration_test/:** Pruebas de integración.
+- **test/:** Mocks para la prueba de integración.
+- **integration_test/:** Prueba de integración.
 - **pubspec.yaml:** Gestión de dependencias y configuraciones del proyecto.
 - **README.md:** Este archivo de documentación.

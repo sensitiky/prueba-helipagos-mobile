@@ -7,21 +7,35 @@ import 'package:prueba_helipagos_mobile/models/nft.dart';
 class ApiService {
   final String baseUrl = Env.baseUrl;
   final String apiKey = Env.apiKey;
-
+  final Map<String, List<Coin>> _coinCache = {};
   final Map<String, Nft> _nftCache = {};
+  final Map<String, List<Coin>> _searchCoinsCache = {};
+  final Map<String, List<Nft>> _nftListCache = {};
 
   Future<List<Coin>> fetchCoins({int page = 1, int perPage = 10}) async {
+    final cacheKey = "page_$page$perPage";
+    if (_coinCache.containsKey(cacheKey)) {
+      return _coinCache[cacheKey]!;
+    }
+
     final response = await http.get(Uri.parse(
         "$baseUrl/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=$perPage&page=$page&sparkline=false&x_cg_demo_api_key=$apiKey"));
+
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
-      return data.map((coin) => Coin.fromJson(coin)).toList();
+      List<Coin> coins = data.map((coin) => Coin.fromJson(coin)).toList();
+      _coinCache[cacheKey] = coins;
+      return coins;
     } else {
       throw Exception("Error al cargar las monedas");
     }
   }
 
   Future<List<Coin>> searchCoins(String query) async {
+    if (_searchCoinsCache.containsKey(query)) {
+      return _searchCoinsCache[query]!;
+    }
+
     final searchResponse = await http.get(
         Uri.parse("$baseUrl/search?query=$query&x-cg-demo-api-key=$apiKey"));
     if (searchResponse.statusCode == 200) {
@@ -31,6 +45,7 @@ class ApiService {
           coins.map<String>((coin) => coin['id'] as String).toList();
 
       if (coinIds.isEmpty) {
+        _searchCoinsCache[query] = [];
         return [];
       }
 
@@ -38,7 +53,10 @@ class ApiService {
           "$baseUrl/coins/markets?vs_currency=usd&ids=${coinIds.join(',')}&order=market_cap_desc&per_page=${coinIds.length}&page=1&sparkline=false&x-cg-demo-api-key=$apiKey"));
       if (coinsDataResponse.statusCode == 200) {
         List<dynamic> coinsData = json.decode(coinsDataResponse.body);
-        return coinsData.map((coin) => Coin.fromJson(coin)).toList();
+        List<Coin> coinsList =
+            coinsData.map((coin) => Coin.fromJson(coin)).toList();
+        _searchCoinsCache[query] = coinsList;
+        return coinsList;
       } else {
         throw Exception("Error al obtener detalles de monedas");
       }
@@ -51,6 +69,11 @@ class ApiService {
   }
 
   Future<List<Nft>> fetchNfts({int page = 1, int perPage = 10}) async {
+    final cacheKey = "page_$page$perPage";
+    if (_nftListCache.containsKey(cacheKey)) {
+      return _nftListCache[cacheKey]!;
+    }
+
     final response = await http.get(
       Uri.parse(
           "$baseUrl/nfts/list?per_page=$perPage&page=$page&x-cg-demo-api-key=$apiKey"),
@@ -58,6 +81,7 @@ class ApiService {
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
       List<Nft> nfts = data.map((nft) => Nft.fromJson(nft)).toList();
+      _nftListCache[cacheKey] = nfts;
       return nfts;
     } else {
       throw Exception("Error al cargar los NFTs");

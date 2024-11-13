@@ -1,5 +1,3 @@
-// welcome_screen.dart
-
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
@@ -68,8 +66,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: isDarkTheme ? Colors.black : Colors.white,
       body: Stack(
         children: [
           ...List.generate(
@@ -83,7 +83,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 child: Text(
                   _slides[_currentPage]['symbol']!,
                   style: TextStyle(
-                    color: Colors.blue[900],
+                    color: isDarkTheme ? Colors.blue[900] : Colors.blue[300],
                     fontSize: 40,
                   ),
                 ),
@@ -105,10 +105,15 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black12,
-                            Colors.black.withOpacity(0.3),
-                          ],
+                          colors: isDarkTheme
+                              ? [
+                                  Colors.black12,
+                                  Colors.black.withOpacity(0.5),
+                                ]
+                              : [
+                                  Colors.white10,
+                                  Colors.white.withOpacity(0.3),
+                                ],
                         ),
                       ),
                     ),
@@ -132,7 +137,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                                   _slides[index]['symbol']!,
                                   style: TextStyle(
                                     fontSize: 80,
-                                    color: Colors.blue[900],
+                                    color: isDarkTheme
+                                        ? Colors.blue[900]
+                                        : Colors.blue[700],
                                   ),
                                 ),
                               ),
@@ -145,8 +152,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           opacity: _currentPage == index ? 1.0 : 0.0,
                           child: Text(
                             _slides[index]['title']!,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: isDarkTheme ? Colors.white : Colors.black,
                               fontSize: 32,
                               fontWeight: FontWeight.w700,
                               letterSpacing: -0.5,
@@ -161,7 +168,9 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                           child: Text(
                             _slides[index]['description']!,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
+                              color: isDarkTheme
+                                  ? Colors.white.withOpacity(0.8)
+                                  : Colors.black.withOpacity(0.6),
                               fontSize: 17,
                               height: 1.4,
                               letterSpacing: -0.2,
@@ -190,7 +199,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   width: _currentPage == index ? 24 : 8,
                   decoration: BoxDecoration(
                     color:
-                        _currentPage == index ? Colors.white : Colors.white38,
+                        _currentPage == index ? Colors.blue[900] : Colors.grey,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );
@@ -209,10 +218,15 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [
-                          Colors.white.withOpacity(0.2),
-                          Colors.white.withOpacity(0.1),
-                        ],
+                        colors: isDarkTheme
+                            ? [
+                                Colors.white.withOpacity(0.2),
+                                Colors.white.withOpacity(0.1),
+                              ]
+                            : [
+                                Colors.black.withOpacity(0.2),
+                                Colors.black.withOpacity(0.1),
+                              ],
                       ),
                       borderRadius: BorderRadius.circular(25),
                       border: Border.all(
@@ -220,16 +234,17 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                       ),
                     ),
                     child: Material(
-                      color: Colors.transparent,
+                      color: isDarkTheme ? Colors.black12 : Colors.white10,
                       child: InkWell(
                         onTap: _navigateToHome,
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               'Comenzar',
                               style: TextStyle(
-                                color: Colors.white,
+                                color:
+                                    isDarkTheme ? Colors.white : Colors.black,
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: -0.2,
