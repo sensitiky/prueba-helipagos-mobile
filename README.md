@@ -1,117 +1,118 @@
-# Prueba Helipagos Mobile
+# TokenWave Mobile
 
-### Descripción
+### Description
 
-Token Wave es una aplicación móvil desarrollada con Flutter que permite a los usuarios explorar y gestionar información relacionada con criptomonedas y NFTs utilizando la API de CoinGecko.
-La aplicación implementa el patrón BLoC para una gestión eficiente del estado y ofrece una interfaz intuitiva para una experiencia de usuario fluida.
+Token Wave is a mobile application developed with Flutter that allows users to explore and manage information related to cryptocurrencies and NFTs using the CoinGecko API.
+The application implements the BLoC pattern for efficient state management and offers an intuitive interface for a smooth user experience.
 
-### Características
+### Features
 
-- **Listado de Criptomonedas:** Visualiza una lista de las principales criptomonedas con datos actualizados.
-- **Detalle de Criptomonedas:** Obtiene información detallada de cada criptomoneda seleccionada.
-- **Búsqueda de Criptomonedas:** Permite a los usuarios buscar criptomonedas específicas.
-- **Listado de NFTs:** Muestra una lista de NFTs disponibles.
-- **Detalle de NFTs:** Obtiene información detallada de cada nft seleccionado.
-- **Gestión del Estado con BLoC:** Utiliza el patrón BLoC para manejar el estado de la aplicación de manera eficiente.
-- **Obfuscación del Código:** Protege el código fuente mediante la obfuscación durante la construcción del APK.
-- **Separación de Información de Depuración:** Divide la información de depuración para mejorar la seguridad y el rendimiento.
+- **Cryptocurrency Listing:** View a list of major cryptocurrencies with up-to-date data.
+- **Cryptocurrency Details:** Get detailed information for each selected cryptocurrency.
+- **Cryptocurrency Search:** Allow users to search for specific cryptocurrencies.
+- **NFT Listing:** Display a list of available NFTs.
+- **NFT Details:** Get detailed information for each selected NFT.
+- **State Management with BLoC:** Uses the BLoC pattern to manage the application's state efficiently.
+- **Code Obfuscation:** Protects the source code through obfuscation during APK build.
+- **Debug Information Separation:** Splits debug information to improve security and performance.
 
-### Tecnologías Utilizadas
+### Technologies Used
 
-- **Flutter:** Framework para el desarrollo de aplicaciones móviles multiplataforma.
-- **Dart:** Lenguaje de programación utilizado en Flutter.
-- **BLoC (Business Logic Component):** Patrón para la gestión del estado.
-- **CoinGecko API:** API utilizada para obtener datos de criptomonedas y NFTs.
-- **HTTP:** Biblioteca para realizar solicitudes HTTP.
-- **Equatable:** Paquete para facilitar la comparación de objetos.
-- **Json Serializable:** Paquete para la generación automática de código de serialización JSON.
-- **Envied:** Paquete para la gestión de variables de entorno de manera segura.
-- **Integration Testing:** Prueba de integración para asegurar la calidad del código y la experiencia del usuario final.
+- **Flutter:** Framework for cross-platform mobile application development.
+- **Dart:** Programming language used in Flutter.
+- **BLoC (Business Logic Component):** Pattern for state management.
+- **CoinGecko API:** API used to obtain cryptocurrency and NFT data.
+- **HTTP:** Library for making HTTP requests.
+- **Equatable:** Package to facilitate object comparison.
+- **Json Serializable:** Package for automatic JSON serialization code generation.
+- **Envied:** Package for secure environment variable management.
+- **Integration Testing:** Integration tests to ensure code quality and final user experience.
 
-### Requisitos Previos
+### Prerequisites
 
-- **Flutter SDK:** Asegúrate de tener instalada la última versión de Flutter.
-- **Android Studio o VS Code:** IDE recomendado para el desarrollo.
-- **Dispositivo o Emulador Android/iOS:** Para ejecutar y probar la aplicación.
-- **Cuenta de CoinGecko:** Obtener una clave API si es necesario.
+- **Flutter SDK:** Ensure you have the latest version of Flutter installed.
+- **Android Studio or VS Code:** Recommended IDE for development.
+- **Android/iOS Device or Emulator:** To run and test the application.
+- **CoinGecko Account:** Obtain an API key if necessary.
 
-### Configuración de Variables de Entorno
+### Environment Variables Configuration
 
-Esta aplicación utiliza variables de entorno para manejar información sensible como claves API.
-A continuación se detallan los pasos para configurar correctamente las variables de entorno sin incluir datos sensibles en el código fuente.
+This application uses environment variables to handle sensitive information such as API keys.
+Below are the steps to correctly configure environment variables without including sensitive data in the source code.
 
-1. **Crear el Archivo `.env`**
+1. **Create the `.env` File**
 
-En la raíz del proyecto, crea un archivo llamado `.env`. Este archivo no debe ser versionado y ya está incluido en el archivo `.gitignore` para evitar su subida al repositorio.
+   In the root of the project, create a file named `.env`. This file should not be versioned and is already included in the `.gitignore` file to prevent it from being uploaded to the repository.
 
-2. **Definir las Variables de Entorno**
+2. **Define the Environment Variables**
 
-Abre el archivo `.env` y define las siguientes variables:
+   Open the `.env` file and define the following variables:
 
-```properties
-API_KEY=tu_clave_api_aquí
-BASE_URL=https://api.coingecko.com/api/v3
-```
+   ```properties
+   API_KEY=your_api_key_here
+   BASE_URL=https://api.coingecko.com/api/v3
+   ```
 
-<sup>La clave API se encuentra incluida en el Drive con los datos sensibles.</sup>
+   <sup>The API key is included in the Drive with sensitive data.</sup>
 
-3. **Generar el Código de Configuración**
-   Después de configurar el archivo .env, ejecuta el siguiente comando para generar los archivos:
+3. **Generate the Configuration Code**
+   After configuring the `.env` file, run the following command to generate the files:
+
    - **env.g.dart**
    - **coin.g.dart**
    - **nft.g.dart**
 
-```bash
-flutter pub run build_runner build --delete-conflicting-outputs
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+
+   _This command uses the Envied package to generate constants for accessing environment variables. Additionally, it will automatically create code for converting to and from JSON using Dart class annotations._
+   <sup>In this repository, the classes for accessing environment variables and the fromJson and toJson conversion classes are already included.</sup>
+
+4. **Using Environment Variables in Code**
+   Access environment variables in your Dart code using the Env class. For example:
+
+   ```dart
+   //import 'package:your_application/models/env.dart';
+   ///In this application
+   import 'package:token_wave_mobile/models/env.dart';
+
+   final String apiKey = Env.apiKey;
+   final String baseUrl = Env.baseUrl;
+   ```
+
+### Usage
+
+1. **Run the Application on an Emulator or Device:**
+
+   ```
+   flutter run
+   ```
+
+2. **Build the APK for Production:**
+
+   ```
+   flutter build apk --release
+   ```
+
+3. **Build the APK with Obfuscation:**
+
+   ```
+   flutter build apk --obfuscate --split-debug-info=./debug_info
+   ```
+
+4. **Perform an Integration Test:**
+
+   <sup>In the root folder of the project</sup>
+
+   ```
+   dart run test integration_test/
+   ```
+
+### Project Structure
+
 ```
-
-_Este comando utilizará el paquete envied para generar las constantes de acceso a las variables de entorno. Además, creará automáticamente el código para convertir hacia y desde JSON mediante la anotación de clases Dart._
-<sup>En este repositorio ya se encuentras las clases tanto de acceso a las variables de entorno y las clases de conversión fromJson y ToJson</sup>
-
-4. **Uso de Variables de Entorno en el Código**
-   Accede a las variables de entorno en tu código Dart mediante la clase Env. Por ejemplo:
-
-```dart
-//import 'package:nombre_de_tu_aplicacion/models/env.dart';
-///En el caso de esta aplicación
-import 'package:prueba_helipagos_mobile/models/env.dart';
-
-final String apiKey = Env.apiKey;
-final String baseUrl = Env.baseUrl;
-```
-
-### Uso
-
-1. **Ejecutar la Aplicación en un Emulador o Dispositivo:**
-
-```
-flutter run
-```
-
-2. **Construir el APK para Producción:**
-
-```
-flutter build apk --release
-```
-
-3. **Construir el APK con Obsfuscación:**
-
-```
-flutter build apk --obfuscate --split-debug-info=./debug_info
-```
-
-4. **Realizar un test de integración:**
-
-<sup>En la carpeta raíz del proyecto</sup>
-
-```
-dart run test integration_test/
-```
-
-### Estructura del Proyecto
-
-```
-prueba_helipagos_mobile/
+token_wave_mobile/
 ├── android/
 ├── ios/
 ├── lib/
@@ -145,18 +146,18 @@ prueba_helipagos_mobile/
 └── README.md
 ```
 
-### Descripción de Carpetas y Archivos
+### Description of Folders and Files
 
-- **android/:** Configuraciones específicas para la plataforma Android.
-- **ios/:** Configuraciones específicas para la plataforma iOS.
-- **lib/:** Contiene el código fuente de la aplicación.
-  - **blocs/:** Implementación de los BLoCs para criptomonedas y NFTs.
-  - **events/:** Definición de los eventos para los BLoCs.
-  - **models/:** Modelos de datos para criptomonedas, NFTs y variables de entorno.
-  - **screens/:** Interfaces de usuario de las diferentes pantallas.
-  - **services/:** Servicios para interactuar con APIs externas.
-  - **state/:** Definición de los estados para los BLoCs.
-  - **main.dart:** Punto de entrada de la aplicación.
-- **integration_test/:** Prueba de integración.
-- **pubspec.yaml:** Gestión de dependencias y configuraciones del proyecto.
-- **README.md:** Este archivo de documentación.
+- **android/:** Platform-specific configurations for Android.
+- **ios/:** Platform-specific configurations for iOS.
+- **lib/:** Contains the application's source code.
+  - **blocs/:** Implementation of BLoCs for cryptocurrencies and NFTs.
+  - **events/:** Definition of events for BLoCs.
+  - **models/:** Data models for cryptocurrencies, NFTs, and environment variables.
+  - **screens/:** User interfaces for different screens.
+  - **services/:** Services to interact with external APIs.
+  - **state/:** State definitions for BLoCs.
+  - **main.dart:** Entry point of the application.
+- **integration_test/:** Integration tests.
+- **pubspec.yaml:** Dependency management and project configurations.
+- **README.md:** This documentation file.

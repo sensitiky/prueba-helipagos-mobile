@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:prueba_helipagos_mobile/components/coin_card.dart';
+import 'package:prueba_helipagos_mobile/components/nft_card.dart';
 import 'package:prueba_helipagos_mobile/main.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:prueba_helipagos_mobile/blocs/coin_bloc.dart';
 import 'package:prueba_helipagos_mobile/blocs/nft_bloc.dart';
 import 'package:prueba_helipagos_mobile/screens/coin_list_screen.dart';
-import 'package:prueba_helipagos_mobile/screens/nft_list_screen.dart';
 import 'package:prueba_helipagos_mobile/screens/welcome_screen.dart';
 import 'package:prueba_helipagos_mobile/services/api_service.dart';
 

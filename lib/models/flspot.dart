@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'flspot.g.dart';
 
+//This class isnt useful stays just in case to make a chart for the coins
 @JsonSerializable()
 class CoinDetail {
   final String id;

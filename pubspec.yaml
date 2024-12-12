@@ -1,10 +1,10 @@
 name: prueba_helipagos_mobile
-description: "A new Flutter project."
-publish_to: "none"
+description: 'A new Flutter project.'
+publish_to: 'none'
 version: 0.1.0
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   connectivity_plus: ^6.1.0
@@ -38,7 +38,7 @@ flutter:
     - assets/icon/icon.png
 
 flutter_launcher_icons:
-  android: "ic_launcher"
+  android: 'ic_launcher'
   ios: true
-  image_path: "assets/icon/icon.png"
+  image_path: 'assets/icon/icon.png'
   remove_alpha_ios: true
